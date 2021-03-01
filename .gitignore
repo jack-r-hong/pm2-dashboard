@@ -1,0 +1,5 @@
+#server
+/server/logs
+/server/node_modules
+
+#flutter

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<script> 
+    home()
+    // deviceState('OP1');
+    // deviceState('IRB6700');
+
+    function home(){
+        let ws = new WebSocket('ws://127.0.0.1:8078/production_line_home/production_line_id/1', 'productionLineHome-protocol')
+
+        ws.onopen = () => {
+            console.log('open connection')
+        }
+
+        ws.onclose = () => {
+            console.log('close connection')
+        }
+        
+
+        //接收 Server 發送的訊息
+        ws.onmessage = event => {
+
+            let data = JSON.parse(event.data)
+            console.log(data)
+            document.querySelector("#OP1").innerHTML = showState(data.OP1) ; 
+            document.querySelector("#OP2").innerHTML = showState(data.OP2) ; 
+            document.querySelector("#OP3").innerHTML = showState(data.OP3) ; 
+            document.querySelector("#OP4").innerHTML = showState(data.OP4) ; 
+            document.querySelector("#IRB6700").innerHTML = showState(data.IRB6700) ; 
+
+        }           
+    }
+     
+
+    function deviceState(device){
+        console.log(device)
+        let ws = new WebSocket('ws://localhost:8078/device_state/' + device, device + '-state-protocol')
+
+        // let ws = new WebSocket('ws://localhost:8080', 'example-protocol')
+
+        ws.onopen = () => {
+            console.log('open connection')
+        }
+
+        ws.onclose = () => {
+            console.log('close connection')
+        }
+
+        //接收 Server 發送的訊息
+        ws.onmessage = event => {
+            let data = JSON.parse(event.data)
+            console.log(data)
+            // function showState(state){
+            //     switch(state){
+            //         case 0 :
+            //             return '未連線';
+            //         case 1 :
+            //             return 'Run';
+            //         case 2 :
+            //             return 'Idol';
+            //         case 3 :
+            //             return 'Error';
+            //         default :
+            //             return '未連線';
+            //     }
+            // }
+            document.querySelector("#indicatorLight").innerHTML = showState(data.indicatorLight) ; 
+            document.querySelector("#errorCount").innerHTML = data.errorCount ; 
+            document.querySelector("#normalCount").innerHTML = data.normalCount ; 
+            document.querySelector("#warningCount").innerHTML = data.warningCount ; 
+            document.querySelector("#diagnoseReport").innerHTML = data.stateNum ; 
+            document.querySelector("#machineToolSpindle").innerHTML = data.machineToolSpindle ; 
+            document.querySelector("#spindleSpeed").innerHTML = data.spindleSpeed ; 
+            document.querySelector("#spindleFeed").innerHTML = data.spindleFeed ; 
+            document.querySelector("#spindleLoad").innerHTML = data.spindleLoad ; 
+            document.querySelector("#spindleLoad").innerHTML = data.spindleLoad ; 
+
+        }              
+    }
+
+    function showState(state){
+                switch(state){
+                    case 0 :
+                        return '未連線';
+                    case 1 :
+                        return 'Run';
+                    case 2 :
+                        return 'Idol';
+                    case 3 :
+                        return 'Error';
+                    default :
+                        return '未連線';
+                }
+            }
+</script>
+<body>
+    <p>系統狀態: </p>
+    <p>OP1 : <b id="OP1"></b> </p>
+    <p>OP2 : <b id="OP2"></b> </p>
+    <p>OP3 : <b id="OP3"></b> </p>
+    <p>OP4 : <b id="OP4"></b> </p>
+    <p>IRB6700 : <b id="IRB6700"></b></p>
+    <p><h1>OP1 :</h1> </p>
+    <p>指示燈 : <b id="indicatorLight"></b> </p>
+    <p>錯誤判斷和計數 : <b id="errorCount"></b> </p>
+    <p>正常判斷和計數 : <b id="normalCount"></b> </p>
+    <p>警告判斷和計數 : <b id="warningCount"></b> </p>
+    <p>stateNum(不知道哪欄) : <b id="diagnoseReport"></b> </p>
+    <p>及時狀態 :  </p>
+    <p>主軸刀號 : <b id="machineToolSpindle"></b> </p>
+    <p>主軸轉速 : <b id="spindleSpeed"></b> </p>
+    <p>主軸進給 : <b id="spindleFeed"></b> </p>
+    <p>主軸負載 : <b id="spindleLoad"></b> </p>
+
+</body>
+</html>
